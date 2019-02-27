@@ -12,9 +12,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-    private void goToSensors(View view)
+    public void goToSensors(View view)
     {
-        Intent intent = new Intent(MainActivity.this,SensorsActivity.class);
+        Intent intent = new Intent(this,SensorsActivity.class);
         this.startActivity(intent);
     }
 }
