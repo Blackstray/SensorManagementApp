@@ -5,4 +5,5 @@
     <string name="repair">Repair</string>
     <string name="nav_header">Some header here</string>
     <string name="nav_floor">Floor</string>
+    <string name="menu_logout">Sign out</string>
 </resources>
