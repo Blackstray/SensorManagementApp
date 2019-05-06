@@ -6,4 +6,7 @@
     <string name="nav_header">Some header here</string>
     <string name="nav_floor">Floor</string>
     <string name="menu_logout">Sign out</string>
+    <string name="change_status_dialog">Change status to:</string>
+    <string name="change_status_submit">Change</string>
+    <string name="change_status_cancel">Cancel</string>
 </resources>

@@ -91,6 +91,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("firebaselogin", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Snackbar.make(findViewById(R.id.sign_in_activity), "Signed in.", Snackbar.LENGTH_SHORT).show();
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.

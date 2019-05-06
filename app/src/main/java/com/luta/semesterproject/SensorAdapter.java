@@ -1,9 +1,13 @@
 package com.luta.semesterproject;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +19,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
 
     private Context mCtx;
     private List<Sensor> sensorList;
+    private String[] statuses = {"Active", "Malfunctioned", "Disabled"};
 
     public SensorAdapter(Context mCtx, List<Sensor> sensorList) {
         this.mCtx = mCtx;
@@ -32,10 +37,18 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
     @Override
     public void onBindViewHolder(@NonNull SensorAdapter.SensorViewHolder productViewHolder, int i) {
         Sensor sensor = sensorList.get(i);
+        if(sensor.getStatus().equals("Active"))
+            productViewHolder.textViewStatus.setTextColor(Color.GREEN);
+        else if (sensor.getStatus().equals( "Malfunctioned"))
+            productViewHolder.textViewStatus.setTextColor(Color.RED);
+        else if (sensor.getStatus().equals("Disabled"))
+            productViewHolder.textViewStatus.setTextColor(Color.DKGRAY);
+        else
+            Log.i("SENSORS","Wrong sensor status - " + sensor.getStatus());
 
+        productViewHolder.textViewStatus.setText(sensor.getStatus());
         productViewHolder.textViewName.setText("Name: " + sensor.getName());
         productViewHolder.textViewType.setText("Type: " + sensor.getType());
-        productViewHolder.textViewStatus.setText("Status: " + sensor.getStatus());
         productViewHolder.textViewAmperage.setText("Amperage: " +sensor.getAmperage()+ "A");
         productViewHolder.textViewPower.setText("Power: " + sensor.getPower()+ "kW");
         productViewHolder.textViewVoltage.setText("Voltage: " + sensor.getVoltage()+ "V");
@@ -45,6 +58,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
     public int getItemCount() {
         return sensorList.size();
     }
+
 
     class SensorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -66,7 +80,20 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
 
         @Override
         public void onClick(View v) {
-            Sensor sensor = sensorList.get(getAdapterPosition());
+            final Sensor sensor = sensorList.get(getAdapterPosition());
+            new AlertDialog.Builder(mCtx)
+                    .setTitle(R.string.change_status_dialog)
+                    .setItems(statuses, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            SensorsActivity.updateStatus(getAdapterPosition(), statuses[which]);
+                            Log.i("SENSORS", "onClick: salala");
+                        }
+                    })
+
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
             /*Intent intent = new Intent(mCtx, UpdateProductActivity.class);
             intent.putExtra("sensor", sensor);
             mCtx.startActivity(intent);*/

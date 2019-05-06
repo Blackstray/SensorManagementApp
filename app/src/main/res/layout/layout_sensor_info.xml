@@ -10,6 +10,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/sensor_textview_status"
+        android:textSize="16dip"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/sensor_textview_name"
         android:textSize="16dip"
         android:textStyle="bold" />
@@ -17,12 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/sensor_textview_type"
-        android:textSize="16dip"
-        android:textStyle="bold" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sensor_textview_status"
         android:textSize="16dip"
         android:textStyle="bold" />
     <TextView

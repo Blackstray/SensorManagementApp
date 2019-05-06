@@ -3,6 +3,7 @@ package com.luta.semesterproject;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -11,31 +12,40 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SensorsActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private FirebaseFirestore db;
-    private SensorAdapter sensorAdapter;
+    //private FirebaseFirestore db;
+    private static SensorAdapter sensorAdapter;
     private RecyclerView sensorsRecyclerView;
-    private List<Sensor> listViewData;
+    private static List<Sensor> listViewData;
+    private static List<DocumentSnapshot> sensors;
+
+    private static String databaseCollection = "Sensors";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +74,18 @@ public class SensorsActivity extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        db = FirebaseFirestore.getInstance(); // CLOUD FIRESTORE INSTANCE
+        //db = FirebaseFirestore.getInstance(); // CLOUD FIRESTORE INSTANCE
         sensorsRecyclerView = findViewById(R.id.sensors_recyclerview);
 
         listViewData = new ArrayList<>(); // initialize arraylist for listview
+        sensors = new ArrayList<>(); // initialize arraylist for ids of sensors
         sensorAdapter = new SensorAdapter(this, listViewData);
 
         RecyclerView recyclerView = findViewById(R.id.sensors_recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(sensorAdapter); // set adapter...
+        readDatabase();
     }
 
     public void buttonPressed1(View view){
@@ -85,10 +97,10 @@ public class SensorsActivity extends AppCompatActivity {
         sensorAdapter.notifyDataSetChanged();
     }
 
-    public void readDatabase(){
+    public static void readDatabase(){
 
-        //db = FirebaseFirestore.getInstance(); // CLOUD FIRESTORE INSTANCE
-        db.collection("Temporary").get()
+        FirebaseFirestore db = FirebaseFirestore.getInstance(); // CLOUD FIRESTORE INSTANCE
+        db.collection(databaseCollection).get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -96,44 +108,27 @@ public class SensorsActivity extends AppCompatActivity {
                         {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                             listViewData.clear(); // JEIGU NORIU KAD NEDETU PAPILDOMAI O TIK ATNAUJINTU SENUS !!!!!!!!!!!!!!!!!!!!!
+                            sensors.clear();
                             for(DocumentSnapshot d : list)
                             {
                                 Sensor s = d.toObject(Sensor.class);
+                                Log.i("SENSORS", d.toString());
                                 listViewData.add(s);
+                                sensors.add(d);
                             }
                             sensorAdapter.notifyDataSetChanged();
                         }
                     }
                 });
-        /*db.collection("Sensors")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<DocumentSnapshot> list =
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d("dbinfo", document.getId() + " => " + document.getData());
-                                temp.add(document.getId() + " => " + document.getData());
-                            }
-                            Log.i("tempinfo",String.valueOf(temp.size()));
-                            SingletonClass s = SingletonClass.getInstance();
-                            s.setData(temp);
-                        } else {
-                            Log.w("dbinfo", "Error getting documents.", task.getException());
-                        }
-
-                    }
-                });*/
     }
 
-    public void readDatabase1()
-    {
-        CollectionReference usersCollectionRef = db.collection("users");
-        List<DocumentReference> documents = new ArrayList<>();
-
+    public static void updateStatus(int id, String newStatus){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> data = new HashMap<>();
+        data.put("status", newStatus);
+        db.collection(databaseCollection).document(sensors.get(id).getId()).set(data, SetOptions.merge());
+        readDatabase();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);

@@ -1,6 +1,12 @@
 package com.luta.semesterproject;
 
+import android.renderscript.Sampler;
+
+import com.google.firebase.database.collection.ArraySortedMap;
+import com.google.firestore.v1.Value;
+
 import java.io.Serializable;
+import java.security.Key;
 
 public class Sensor implements  Serializable{
 
@@ -9,13 +15,13 @@ public class Sensor implements  Serializable{
 
     public Sensor() {}
 
-    public Sensor(double amperage, double power, double voltage, String type, String name, String status) {
-        this.amperage = amperage;
-        this.power = power;
-        this.voltage = voltage;
-        this.type = type;
-        this.name = name;
-        this.status = status;
+    public Sensor(ArraySortedMap<String,String> array){
+        this.amperage = Double.parseDouble(array.get("amperage"));
+        this.power = Double.parseDouble(array.get("power"));
+        this.voltage = Double.parseDouble(array.get("voltage"));
+        this.status = array.get("status");
+        this.type = array.get("type");
+        this.name = array.get("name");
     }
 
     public double getAmperage() {
