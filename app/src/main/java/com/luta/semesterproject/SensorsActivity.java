@@ -1,5 +1,6 @@
 package com.luta.semesterproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,8 +17,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,9 @@ public class SensorsActivity extends AppCompatActivity {
     private RecyclerView sensorsRecyclerView;
     private static List<Sensor> listViewData;
     private static List<DocumentSnapshot> sensors;
+    private static List<String> floors;
+    private static ArrayAdapter<String> spinnerAdapter;
+    private static int selectedFloor = 0;
 
     private static String databaseCollection = "Sensors";
 
@@ -73,6 +80,14 @@ public class SensorsActivity extends AppCompatActivity {
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+        floors = new ArrayList<>(); // floors list initialization
+        floors.add("All floors");
+        Spinner spinner = (Spinner) findViewById(R.id.menu_spinner); // floors adapter
+        spinnerAdapter = new ArrayAdapter(this,R.layout.spinner_item,floors);
+        //spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // suknisa isvaizda nors neturetu
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new SpinnerActivity());
 
         //db = FirebaseFirestore.getInstance(); // CLOUD FIRESTORE INSTANCE
         sensorsRecyclerView = findViewById(R.id.sensors_recyclerview);
@@ -109,14 +124,58 @@ public class SensorsActivity extends AppCompatActivity {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                             listViewData.clear(); // JEIGU NORIU KAD NEDETU PAPILDOMAI O TIK ATNAUJINTU SENUS !!!!!!!!!!!!!!!!!!!!!
                             sensors.clear();
+                            floors.clear();
+                            floors.add("All floors");
+                            selectedFloor = 0;
                             for(DocumentSnapshot d : list)
                             {
                                 Sensor s = d.toObject(Sensor.class);
                                 Log.i("SENSORS", d.toString());
                                 listViewData.add(s);
                                 sensors.add(d);
+                                if(!floors.contains("Floor " + (int)s.getFloor()))
+                                    floors.add("Floor " + (int)s.getFloor());
+
                             }
+                            Log.i("SENSORS", "FLOORS COUNT "+ floors.size());
                             sensorAdapter.notifyDataSetChanged();
+                            Collections.sort(floors);
+                            spinnerAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+    }
+    public static void readDatabase(final int floor){
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance(); // CLOUD FIRESTORE INSTANCE
+        db.collection(databaseCollection).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(!queryDocumentSnapshots.isEmpty())
+                        {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                            listViewData.clear(); // JEIGU NORIU KAD NEDETU PAPILDOMAI O TIK ATNAUJINTU SENUS !!!!!!!!!!!!!!!!!!!!!
+                            sensors.clear();
+                            floors.clear();
+                            floors.add("All floors");
+                            selectedFloor = floor;
+                            for(DocumentSnapshot d : list)
+                            {
+                                Sensor s = d.toObject(Sensor.class);
+                                Log.i("SENSORS", d.toString());
+                                if(s.getFloor() == floor) {
+                                    listViewData.add(s);
+                                    sensors.add(d);
+                                }
+                                if(!floors.contains("Floor " + (int)s.getFloor()))
+                                    floors.add("Floor " + (int)s.getFloor());
+
+                            }
+                            Log.i("SENSORS", "FLOORS COUNT "+ floors.size());
+                            sensorAdapter.notifyDataSetChanged();
+                            Collections.sort(floors);
+                            spinnerAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -127,7 +186,9 @@ public class SensorsActivity extends AppCompatActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("status", newStatus);
         db.collection(databaseCollection).document(sensors.get(id).getId()).set(data, SetOptions.merge());
-        readDatabase();
+        if(selectedFloor == 0)
+            readDatabase();
+        else readDatabase(selectedFloor);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,5 +214,4 @@ public class SensorsActivity extends AppCompatActivity {
 
         }
     }
-
 }

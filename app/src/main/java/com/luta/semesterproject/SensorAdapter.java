@@ -52,6 +52,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         productViewHolder.textViewAmperage.setText("Amperage: " +sensor.getAmperage()+ "A");
         productViewHolder.textViewPower.setText("Power: " + sensor.getPower()+ "kW");
         productViewHolder.textViewVoltage.setText("Voltage: " + sensor.getVoltage()+ "V");
+        productViewHolder.textViewFloor.setText("Floor: "+ sensor.getFloor());
     }
 
     @Override
@@ -62,11 +63,12 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
 
     class SensorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView textViewName, textViewType, textViewStatus, textViewAmperage, textViewPower, textViewVoltage;
+        TextView textViewFloor, textViewName, textViewType, textViewStatus, textViewAmperage, textViewPower, textViewVoltage;
 
         public SensorViewHolder(View itemView) {
             super(itemView);
 
+            textViewFloor = itemView.findViewById(R.id.sensor_textview_floor);
             textViewName = itemView.findViewById(R.id.sensor_textview_name);
             textViewType = itemView.findViewById(R.id.sensor_textview_type);
             textViewStatus = itemView.findViewById(R.id.sensor_textview_status);
