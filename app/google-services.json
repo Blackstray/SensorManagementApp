@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "328272116624",
+    "firebase_url": "https://sensormanagementproject.firebaseio.com",
+    "project_id": "sensormanagementproject",
+    "storage_bucket": "sensormanagementproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328272116624:android:4089cb26ac884fde",
+        "android_client_info": {
+          "package_name": "com.luta.semesterproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "328272116624-1jt4u7r69es731q4evapo03mu1mpj78m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcQrgW7AqMSDV6Q_2onD_TG7kHwSev0o4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
