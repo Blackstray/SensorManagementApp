@@ -104,7 +104,9 @@ public class SensorsActivity extends AppCompatActivity {
     }
 
     public void buttonPressed1(View view){
-        readDatabase();
+        if(selectedFloor == 0)
+            readDatabase();
+        else readDatabase(selectedFloor);
         sensorAdapter.notifyDataSetChanged();
     }
     public void buttonPressed2(View view){
