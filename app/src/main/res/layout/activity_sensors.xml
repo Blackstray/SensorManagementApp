@@ -8,10 +8,10 @@
     android:fitsSystemWindows="true">
 
     <!-- main layout -->
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:id="@+id/linear_layout">
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
@@ -29,30 +29,23 @@
                 android:layout_width="200dp" />
         </android.support.v7.widget.Toolbar>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <Button style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:onClick="buttonPressed1"
-                android:text="Refresh"/>
-            <Switch
-                android:layout_alignParentRight="true"
-                android:switchMinWidth="65dp"
-                android:layout_width="70dp"
-                android:layout_height="50dp"
-                android:layout_marginRight="5dp"
-                android:id="@+id/switch_auto_update"/>
-        </RelativeLayout>
         <android.support.v7.widget.RecyclerView
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_gravity="bottom"
             android:id="@+id/sensors_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorFakeConsole"/>
-    </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/baseline_refresh_white_48dp"
+            android:layout_margin="16dp" />
+        <!-- container for contents of drawer -->
+    </android.support.design.widget.CoordinatorLayout>
 
-    <!-- container for contents of drawer -->
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_id"
         android:layout_width="wrap_content"

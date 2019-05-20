@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
@@ -58,6 +59,7 @@ public class SensorsActivity extends AppCompatActivity {
     private static int delayForUpdate = 4000;
     private static Handler handler; // handler for time
     private static Runnable runnable;
+    private FloatingActionButton fab;
     private static String databaseCollection = "Sensors";
 
     @Override
@@ -71,10 +73,19 @@ public class SensorsActivity extends AppCompatActivity {
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                        menuItem.setChecked(true); //persist highlight
-                        drawerLayout.closeDrawers(); // close drawer when item selected
-
-
+                        int id = menuItem.getItemId();
+                        //menuItem.setChecked(true); //persist highlight
+                        //drawerLayout.closeDrawers(); // close drawer when item selected
+                        if(id == R.id.drawer_switch)
+                        {
+                            return false;
+                        }
+                        else if(id == R.id.logout)
+                        {
+                            FirebaseAuth.getInstance().signOut();
+                            Intent i = new Intent(SensorsActivity.this, SignInActivity.class);
+                            startActivity(i);
+                        }
                         return false;
                     }
                 }
@@ -107,7 +118,7 @@ public class SensorsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(sensorAdapter); // set adapter...
 
-        Switch toggleAuto = (Switch) findViewById(R.id.switch_auto_update);
+        Switch toggleAuto = (Switch) navigationView.getMenu().findItem(R.id.switch_auto_update).getActionView();
         toggleAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -126,10 +137,18 @@ public class SensorsActivity extends AppCompatActivity {
         });
         handler = new Handler();
 
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fabClick(v);
+            }
+        });
+
         readDatabase();
     }
 
-    public void buttonPressed1(View view){
+    public void fabClick(View view){
         if(selectedFloor == 0)
             readDatabase();
         else readDatabase(selectedFloor);
@@ -241,19 +260,8 @@ public class SensorsActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_sign_out:
-                FirebaseAuth.getInstance().signOut();
-                Intent i = new Intent(SensorsActivity.this, SignInActivity.class);
-                startActivity(i);
-                return true;
 
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
