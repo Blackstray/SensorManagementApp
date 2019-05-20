@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#00BFA5</color>
-    <color name="colorFakeConsole">#F5F5F5</color>
     <color name="colorPrimarySlightlyDarker">#007A6D</color>
+    <color name="colorFakeConsole">#F8F8F8</color>
     <color name="colorWhite">#FFFFFF</color>
 </resources>
+<!--
+<resources>
+<color name="colorPrimary">#FF3D00</color>
+<color name="colorPrimaryDark">#DD2C00</color>
+<color name="colorAccent">#FF3D00</color>
+<color name="colorPrimarySlightlyDarker">#DD2C00</color>
+<color name="colorFakeConsole">#F8F8F8</color>
+<color name="colorWhite">#FFFFFF</color>
+</resources>
+--><!--
+<resources>
+<color name="colorPrimary">#2979FF</color>
+<color name="colorPrimaryDark">#2962FF</color>
+<color name="colorAccent">#2979FF</color>
+<color name="colorPrimarySlightlyDarker">#2962FF</color>
+<color name="colorFakeConsole">#F8F8F8</color>
+<color name="colorWhite">#FFFFFF</color>
+</resources>
+--><!--
+<resources>
+<color name="colorPrimary">#FFD600</color>
+<color name="colorPrimaryDark">#FFAB00</color>
+<color name="colorAccent">#FFEA00</color>
+<color name="colorPrimarySlightlyDarker">#FFC400</color>
+<color name="colorFakeConsole">#F8F8F8</color>
+<color name="colorWhite">#FFFFFF</color>
+</resources>
+  -->

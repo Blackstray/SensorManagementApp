@@ -2,6 +2,7 @@ package com.luta.semesterproject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
@@ -19,8 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,7 +54,10 @@ public class SensorsActivity extends AppCompatActivity {
     private static List<String> floors;
     private static ArrayAdapter<String> spinnerAdapter;
     private static int selectedFloor = 0;
-
+    private static boolean autoUpdate = false;
+    private static int delayForUpdate = 4000;
+    private static Handler handler; // handler for time
+    private static Runnable runnable;
     private static String databaseCollection = "Sensors";
 
     @Override
@@ -100,6 +106,26 @@ public class SensorsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(sensorAdapter); // set adapter...
+
+        Switch toggleAuto = (Switch) findViewById(R.id.switch_auto_update);
+        toggleAuto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                {
+                    delayForUpdate = 1500;
+                    autoUpdate = true;
+                    Log.i("SENSORS","autoUpdate = true");
+                }
+                else {
+                    delayForUpdate = 4000;
+                    autoUpdate = false;
+                    Log.i("SENSORS","autoUpdate = false");
+                }
+            }
+        });
+        handler = new Handler();
+
         readDatabase();
     }
 
@@ -107,10 +133,6 @@ public class SensorsActivity extends AppCompatActivity {
         if(selectedFloor == 0)
             readDatabase();
         else readDatabase(selectedFloor);
-        sensorAdapter.notifyDataSetChanged();
-    }
-    public void buttonPressed2(View view){
-        listViewData.clear();
         sensorAdapter.notifyDataSetChanged();
     }
 
@@ -192,6 +214,32 @@ public class SensorsActivity extends AppCompatActivity {
             readDatabase();
         else readDatabase(selectedFloor);
     }
+
+    @Override
+    protected void onResume() {
+
+        //start handler as activity become visible
+        handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                Log.i("SENSORS", "onResume");
+                if (autoUpdate) {
+                    Log.i("SENSORS", "AutoUpdate end");
+                    if (selectedFloor == 0)
+                        readDatabase();
+                    else readDatabase(selectedFloor);
+                }
+                handler.postDelayed(runnable, delayForUpdate);
+            }
+        }, delayForUpdate);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        handler.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
