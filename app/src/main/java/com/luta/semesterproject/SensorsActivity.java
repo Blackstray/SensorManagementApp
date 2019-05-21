@@ -1,37 +1,32 @@
 package com.luta.semesterproject;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.github.chrisbanes.photoview.PhotoView;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -42,6 +37,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class SensorsActivity extends AppCompatActivity {
@@ -54,7 +60,7 @@ public class SensorsActivity extends AppCompatActivity {
     private static List<DocumentSnapshot> sensors;
     private static List<String> floors;
     private static ArrayAdapter<String> spinnerAdapter;
-    private static int selectedFloor = 0;
+    private static int selectedFloor = -420;
     private static boolean autoUpdate = false;
     private static int delayForUpdate = 4000;
     private static Handler handler; // handler for time
@@ -113,9 +119,11 @@ public class SensorsActivity extends AppCompatActivity {
         sensors = new ArrayList<>(); // initialize arraylist for ids of sensors
         sensorAdapter = new SensorAdapter(this, listViewData);
 
-        RecyclerView recyclerView = findViewById(R.id.sensors_recyclerview);
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.sensors_recyclerview);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(sensorAdapter); // set adapter...
 
         Switch toggleAuto = (Switch) navigationView.getMenu().findItem(R.id.switch_auto_update).getActionView();
@@ -126,11 +134,17 @@ public class SensorsActivity extends AppCompatActivity {
                 {
                     delayForUpdate = 1500;
                     autoUpdate = true;
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Auto update is now on!", Snackbar.LENGTH_SHORT)
+                            .show();
                     Log.i("SENSORS","autoUpdate = true");
                 }
                 else {
                     delayForUpdate = 4000;
                     autoUpdate = false;
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Auto update is now off!", Snackbar.LENGTH_SHORT)
+                            .show();
                     Log.i("SENSORS","autoUpdate = false");
                 }
             }
@@ -149,7 +163,7 @@ public class SensorsActivity extends AppCompatActivity {
     }
 
     public void fabClick(View view){
-        if(selectedFloor == 0)
+        if(selectedFloor == -420)
             readDatabase();
         else readDatabase(selectedFloor);
         sensorAdapter.notifyDataSetChanged();
@@ -169,7 +183,7 @@ public class SensorsActivity extends AppCompatActivity {
                             sensors.clear();
                             floors.clear();
                             floors.add("All floors");
-                            selectedFloor = 0;
+                            selectedFloor = -420;
                             for(DocumentSnapshot d : list)
                             {
                                 Sensor s = d.toObject(Sensor.class);
@@ -181,9 +195,9 @@ public class SensorsActivity extends AppCompatActivity {
 
                             }
                             Log.i("SENSORS", "FLOORS COUNT "+ floors.size());
-                            sensorAdapter.notifyDataSetChanged();
-                            Collections.sort(floors);
                             spinnerAdapter.notifyDataSetChanged();
+                            Collections.sort(floors);
+                            sensorAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -216,9 +230,9 @@ public class SensorsActivity extends AppCompatActivity {
 
                             }
                             Log.i("SENSORS", "FLOORS COUNT "+ floors.size());
-                            sensorAdapter.notifyDataSetChanged();
-                            Collections.sort(floors);
                             spinnerAdapter.notifyDataSetChanged();
+                            Collections.sort(floors);
+                            sensorAdapter.notifyDataSetChanged();
                         }
                     }
                 });
@@ -229,7 +243,7 @@ public class SensorsActivity extends AppCompatActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("status", newStatus);
         db.collection(databaseCollection).document(sensors.get(id).getId()).set(data, SetOptions.merge());
-        if(selectedFloor == 0)
+        if(selectedFloor == -420)
             readDatabase();
         else readDatabase(selectedFloor);
     }
@@ -243,7 +257,7 @@ public class SensorsActivity extends AppCompatActivity {
                 Log.i("SENSORS", "onResume");
                 if (autoUpdate) {
                     Log.i("SENSORS", "AutoUpdate end");
-                    if (selectedFloor == 0)
+                    if (selectedFloor == -420)
                         readDatabase();
                     else readDatabase(selectedFloor);
                 }
@@ -258,7 +272,17 @@ public class SensorsActivity extends AppCompatActivity {
         handler.removeCallbacks(runnable); //stop handler when activity not visible
         super.onPause();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+
+        ////Set icon for the menu button
+        //Drawable icon = getResources().getDrawable(R.drawable.baseline_map_black_48dp);
+        //menu.getItem(0).setIcon(icon);
+        return true;
+    } //End onCreateOptionsMenu()
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -267,6 +291,24 @@ public class SensorsActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
                 return true;
 
+            case R.id.menu_map:
+                if(selectedFloor != -420) {
+                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(SensorsActivity.this);
+                    View mView = getLayoutInflater().inflate(R.layout.dialog_custom, null);
+                    PhotoView photoView = mView.findViewById(R.id.imageView);
+                    int resID = getResources().getIdentifier("floor" + selectedFloor,
+                            "drawable", getPackageName());
+                    photoView.setImageResource(resID);
+                    mBuilder.setView(mView);
+                    AlertDialog mDialog = mBuilder.create();
+                    mDialog.show();
+                }
+                else {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Choose floor first!", Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 

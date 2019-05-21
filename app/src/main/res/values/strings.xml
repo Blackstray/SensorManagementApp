@@ -10,4 +10,5 @@
     <string name="change_status_submit">Change</string>
     <string name="change_status_cancel">Cancel</string>
     <string name="auto_update">Auto refresh data</string>
+    <string name="map">Map</string>
 </resources>
