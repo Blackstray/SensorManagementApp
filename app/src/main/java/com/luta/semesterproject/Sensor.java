@@ -10,7 +10,8 @@ import java.security.Key;
 
 public class Sensor implements  Serializable{
 
-    private double voltage, amperage, power, floor;
+    private double voltage, amperage, power, coordx, coordy;
+    private int floor;
     private String type, name, status;
 
     public Sensor() {}
@@ -22,7 +23,28 @@ public class Sensor implements  Serializable{
         this.status = array.get("status");
         this.type = array.get("type");
         this.name = array.get("name");
-        this.floor = Double.parseDouble(array.get("floor"));
+        this.floor = Integer.parseInt(array.get("floor"));
+        this.coordx = Double.parseDouble(array.get("coordx"));
+        this.coordy = Double.parseDouble(array.get("coordy"));
+    }
+
+    public double getCoordx()
+    {
+        return coordx;
+    }
+
+    public void setCoordx(double x)
+    {
+        this.coordx = x;
+    }
+    public double getCoordy()
+    {
+        return coordy;
+    }
+
+    public void setCoordy(double y)
+    {
+        this.coordy = y;
     }
 
     public double getAmperage() {
@@ -49,7 +71,7 @@ public class Sensor implements  Serializable{
         this.voltage = voltage;
     }
 
-    public double getFloor() {
+    public int getFloor() {
         return floor;
     }
 

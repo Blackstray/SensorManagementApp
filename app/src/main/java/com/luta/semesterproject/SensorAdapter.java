@@ -54,7 +54,7 @@ public class SensorAdapter extends RecyclerView.Adapter<SensorAdapter.SensorView
         productViewHolder.textViewAmperage.setText("Amperage: " +sensor.getAmperage()+ "A");
         productViewHolder.textViewPower.setText("Power: " + sensor.getPower()+ "kW");
         productViewHolder.textViewVoltage.setText("Voltage: " + sensor.getVoltage()+ "V");
-        productViewHolder.textViewFloor.setText("Floor: "+ sensor.getFloor());
+        productViewHolder.textViewFloor.setText("Floor: "+ sensor.getFloor() + ", x: "+ sensor.getCoordx()+" y: "+sensor.getCoordy());
     }
 
     @Override
