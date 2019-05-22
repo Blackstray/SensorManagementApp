@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/drawer_repair"
-            android:icon="@drawable/round_build_black_48dp"
-            android:title="@string/repair"  />
+            android:title="@string/auto_update"
+            android:icon="@drawable/baseline_sync_white_48dp"
+            android:id="@+id/switch_auto_update"
+            app:actionLayout="@layout/layout_switch"/>
+    </group>
+    <group android:checkableBehavior="none">
+        <item
+            android:title="@string/menu_logout"
+            android:icon="@drawable/baseline_exit_to_app_black_48dp"
+            android:id="@+id/logout"/>
     </group>
 </menu>
